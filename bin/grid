@@ -1,0 +1,5 @@
+#!/bin/bash
+
+BASEDIR=$(dirname $(dirname $(realpath $0)))
+${BASEDIR}/dev/bin/grid "$@"
+
