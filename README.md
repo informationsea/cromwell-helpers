@@ -1,24 +1,23 @@
-Cromwell Helper
-===============
+# Cromwell Helper
 
-Utilities for [Cromwell workflow engine](https://github.com/broadinstitute/cromwell)
+Utilities for
+[Cromwell workflow engine](https://github.com/broadinstitute/cromwell)
 
-cromwell-cli
-------------
+## cromwell-cli
 
 Command line client for Cromwell REST API
 
 ### Commands
 
-* backends: Show supported backends
-* submit: Submit workflow
-* describe: Describe workflow
-* query: Query workflow status
-* output: Show workflow output paths
-* abort: Abort workflow
-* release-hold: Release hold workflow
-* metadata: Show metadata of workflow
-* export: Export output data into a directory
+- backends: Show supported backends
+- submit: Submit workflow
+- describe: Describe workflow
+- query: Query workflow status
+- output: Show workflow output paths
+- abort: Abort workflow
+- release-hold: Release hold workflow
+- metadata: Show metadata of workflow
+- export: Export output data into a directory
 
 ### Configuration
 
@@ -40,18 +39,17 @@ Command line client for Cromwell REST API
 4. Check detail with `cromwell-cli.py metadata`
 5. Show failed task in workflow with `cromwell-cli.py meatadata -f ID`
 
-fakedocker
-----------
+## fakedocker
 
 Bridge between singularity and cromwell
 
 ### Commands
 
-* pull: pull image from docker hub and store to home directory
-* images: list up downloaded images
-* run-with-cromwell: run singularity in cromwell
-* find: print a singularity image path for the name
-* import-singularity: import singularity image to home directory
+- pull: pull image from docker hub and store to home directory
+- images: list up downloaded images
+- run-with-cromwell: run singularity in cromwell
+- find: print a singularity image path for the name
+- import-singularity: import singularity image to home directory
 
 ### Basic usage
 
@@ -59,16 +57,3 @@ Bridge between singularity and cromwell
 2. Make a symbolic link `docker` to `fakedocker`.
 3. Add `docker` located directory to `$PATH`
 4. Run cromwell server
-
-
-grid
-----
-
-Grid Engine Helper
-
-### Commands
-
-* stat: Show status of running and pending jobs
-* tablist: Tab separated list of running and pending jobs
-* records: Show recent finished job records
-* show: Show job detail
