@@ -109,6 +109,9 @@ def __main():
                                                  required=True)
     cromwell_singularity_run_parser.add_argument('--run-shell',
                                                  action='store_true')
+    cromwell_singularity_run_parser.add_argument('--ref-cache',
+                                                 help='htslib REF_CACHE directory (default: %(default)s)',
+                                                 default="/share1/public/hts-ref")
 
     find_parser = subparsers.add_parser('find', help='find singularity image')
     find_parser.set_defaults(func=find)
@@ -131,7 +134,7 @@ def __main():
     memory_per_core_parser.add_argument('--memory-limit',
                                         help='maximum memory size in GB',
                                         type=int,
-                                        default=94)
+                                        default=500)
     memory_per_core_parser.add_argument('core', help='number of cpu cores',
                                         type=int)
 
@@ -205,12 +208,13 @@ def cromwell_singularity_run(options):
     # print(bind_arg.replace(',', '\n'), file=sys.stderr)
 
     ACCEPT_BIND_LEN = 100000
+
     if len(bind_arg) > ACCEPT_BIND_LEN:
         bind_arg = ','.join([
             x[2] + ':' + x[1] + ':ro' for x in binds
-            if not x[0].startswith(execution_dir)
-            or not x[1].startswith(execution_dir)
+            if not x[0].startswith(execution_dir) or not x[1].startswith(execution_dir)
         ])
+
         if bind_arg:
             bind_arg += ','
         bind_arg += '{}:{}:ro'.format(execution_dir, execution_dir)
@@ -218,8 +222,14 @@ def cromwell_singularity_run(options):
     if bind_arg:
         bind_arg += ','
     bind_arg += '{}:{}:rw,'.format(workdir, options.docker_workdir)
-    bind_arg += '{0}:{0}:rw'.format(os.path.join(workdir, 'home'))
+    bind_arg += '{0}:{0}:rw,'.format(os.path.join(workdir, 'home'))
+
+    if os.path.exists(options.ref_cache):
+        bind_arg += f'{options.ref_cache}:/hts-ref:ro'
+        os.environ['REF_CACHE'] = "/hts-ref/%2s/%2s/%s"
+
     print('actual bind', bind_arg, file=logfile)
+    logfile.flush()
 
     # find singularity image
     image = docker.parse_image_name(options.image_name,
@@ -256,15 +266,15 @@ def archive_images(options):
             image_path = os.path.abspath(
                 singularity.image_path(options.image_store_path, image))
             store_path = singularity.image_path('.cromwell/singularity', image)
-            #print(image_path, store_path)
+            # print(image_path, store_path)
             f.add(image_path, store_path)
-            
+
             if os.path.islink(image_path):
                 image_path = fileutils.realpath(image_path)
-                store_path = os.path.join('.cromwell/singularity', os.path.relpath(image_path,  fileutils.realpath(options.image_store_path)))
+                store_path = os.path.join('.cromwell/singularity', os.path.relpath(image_path, fileutils.realpath(options.image_store_path)))
             if os.path.exists(image_path):
                 f.add(image_path, store_path)
-                #print(image_path, store_path)
+                # print(image_path, store_path)
 
 
 def run(options):
